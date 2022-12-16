@@ -1,0 +1,60 @@
+# This is a basic workflow to help you get started with Actions
+
+name: build and publish
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    container: 'lierdakil/alpine-haskell:8.10.7'
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: actions/cache@v2
+        with:
+          path: $HOME/.cabal/
+      - run: cabal update
+      - run: |
+          cabal install stack2cabal \
+            --constraint hpack==0.34.4 \
+            --constraint stack2cabal==1.0.13 \
+            --allow-older=hpack \
+            --enable-executable-static --enable-static \
+            --enable-relocatable --enable-split-sections \
+            --enable-executable-stripping --disable-shared \
+            --ghc-options='-fPIC -fasm -optl-static -optl-pthread +RTS -A64m -RTS' \
+            --install-method=copy \
+            --installdir=.
+            
+      - uses: actions/upload-artifact@v2
+        with:
+          name: cabal2stack
+          path: cabal2stack
+
+  release:
+    needs: [build]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+    - uses: actions/download-artifact@v2
+    - name: Create release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          stack2cabal
+        fail_on_unmatched_files: true
