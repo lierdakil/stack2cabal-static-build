@@ -24,6 +24,25 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      - run: |
+          apk add --no-cache \
+              curl \
+              gcc \
+              g++ \
+              gmp-dev \
+              ncurses-dev \
+              libffi-dev \
+              zlib-dev \
+              make \
+              xz \
+              tar \
+              perl \
+              bash \
+              shadow \
+              openssh-client \
+              binutils-gold \
+              zlib-static \
+              sudo
       - uses: haskell/actions/setup@v2
         id: setup-haskell-cabal
         name: Setup Haskell
