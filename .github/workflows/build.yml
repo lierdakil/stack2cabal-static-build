@@ -68,7 +68,7 @@ jobs:
             --install-method=copy \
             --installdir=.
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: stack2cabal
           path: stack2cabal
@@ -78,12 +78,12 @@ jobs:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
-    - uses: actions/download-artifact@v2
+    - uses: actions/download-artifact@v3
     - name: Create release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          stack2cabal
+          ./stack2cabal
         fail_on_unmatched_files: true
