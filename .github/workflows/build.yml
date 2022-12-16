@@ -86,5 +86,5 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          ./stack2cabal
+          ./stack2cabal/stack2cabal
         fail_on_unmatched_files: true
