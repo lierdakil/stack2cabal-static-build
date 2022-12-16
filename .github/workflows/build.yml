@@ -70,8 +70,8 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: cabal2stack
-          path: cabal2stack
+          name: stack2cabal
+          path: stack2cabal
 
   release:
     needs: [build]
