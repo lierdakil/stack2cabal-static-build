@@ -48,13 +48,13 @@ jobs:
         name: Setup Haskell
         with:
           ghc-version: '8.10.7'
-          cabal-version: '3.8'
+          cabal-version: '3.6'
 
       - uses: actions/cache@v3
         name: Cache cabal-store
         with:
           path: ${{ steps.setup-haskell-cabal.outputs.cabal-store }}
-          key: cabal
+          key: cabal-r1
 
       - run: |
           cabal install stack2cabal -j \
@@ -67,6 +67,14 @@ jobs:
             --ghc-options='-fPIC -fasm -optl-static -optl-pthread +RTS -A64m -RTS' \
             --install-method=copy \
             --installdir=.
+
+      - name: Check executable runs
+        run: ./stack2cabal --version
+
+      - name: Check that executable is static
+        run: |
+          ldd ./stack2cabal 2>&1 || true
+          ldd ./stack2cabal 2>&1 | grep -q 'Not a valid dynamic program'
 
       - uses: actions/upload-artifact@v3
         with:
