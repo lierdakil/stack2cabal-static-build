@@ -56,9 +56,8 @@ jobs:
           path: ${{ steps.setup-haskell-cabal.outputs.cabal-store }}
           key: cabal
 
-      - run: cabal update
       - run: |
-          cabal install stack2cabal \
+          cabal install stack2cabal -j \
             --constraint hpack==0.34.4 \
             --constraint stack2cabal==1.0.13 \
             --allow-older=hpack \
