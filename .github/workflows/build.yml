@@ -20,14 +20,23 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-    container: 'lierdakil/alpine-haskell:8.10.7'
+    container: 'alpine:3.17'
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - uses: actions/cache@v2
+      - uses: haskell/actions/setup@v2
+        id: setup-haskell-cabal
+        name: Setup Haskell
         with:
-          path: $HOME/.cabal/
+          ghc-version: '8.10.7'
+          cabal-version: '3.8'
+
+      - uses: actions/cache@v3
+        name: Cache cabal-store
+        with:
+          path: ${{ steps.setup-haskell-cabal.outputs.cabal-store }}
           key: cabal
+
       - run: cabal update
       - run: |
           cabal install stack2cabal \
